@@ -1,1 +1,1 @@
-web: npm run build && node src/server-es5.js
+web: node src/server-es5.js
