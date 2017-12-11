@@ -1,0 +1,27 @@
+body {
+	font-family: 'Montserrat', sans-serif;
+}
+
+main {
+	margin-top: 120px;
+}
+.item {
+	border: 1px solid #eee;
+	box-shadow: 1px 2px 2px #eee;
+	border-radius: 3px;
+}
+.item img {
+	border-radius: 3px;
+}
+
+button {
+	cursor: pointer;
+}
+
+.btn.disabled, .btn:disabled {
+	pointer-events: none;
+}
+
+.hide {
+	display: none !important;
+}
