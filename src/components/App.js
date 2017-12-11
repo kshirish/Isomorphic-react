@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Switch, Route, Link, Redirect } from 'react-router-dom';
 import { Container, Row, Col } from 'reactstrap';
 
 import Main from './Main';
@@ -14,6 +14,7 @@ const App = () => (
 				<Switch>  
 					<Route path="/page/:id" component={Main} />
 					<Route path="/about" component={About} />
+                    <Redirect from='*' to='/page/1?q=wild' />
 				</Switch>   
 			</Col>
 		</Row>	

@@ -20,9 +20,19 @@ app.use(Express.static(path.join(__dirname, 'static')));
 
 app.get('*', function(req, res) {
 
-	const pageId = req.path.replace('/page/', '');
-	const searchTxt = req.query.q.replace('q=', '');
+	let pageId = 1;
+	let searchTxt = '';
 
+	try {
+	
+		pageId = req.path.replace('/page/', '');
+		searchTxt = req.query.q.replace('q=', '');
+	
+	} catch(e) {
+
+		console.log('error occured on server side');
+	}
+		
 	Api.fetchResults(pageId, searchTxt)  
 		.then(function(result) {
 
