@@ -1,29 +1,36 @@
 import Api from '../api';
 
-export const updateSearchTxt = function(searchTxt) {
+export const updateFormProperty = function(payload) {
 	return {
-		type: 'UPDATE_SEARCH_TXT',
-		payload: searchTxt
-	}
+		type: 'UPDATE_FORM_PROPERTY',
+		payload
+	};
 }
 
-export const updatePageId = function(pageId) {
-	return {
-		type: 'UPDATE_PAGE_ID',
-		payload: pageId
-	}
+export const fetchFiltersApi = function(config) {
+
+	return function(dispatch) {
+
+		dispatch({ type: 'FILTERS_REQUESTING' });
+
+		Api.fetchFilters(config)
+			.then(function(res) {
+
+				dispatch({ type: 'FILTERS_RECEIVED', payload: res.body });
+			});
+	};
 }
 
-export const fetchResultsApi = function(pageId, searchTxt) {
+export const fetchDetailsApi = function(config) {
 
-  return function(dispatch) {
-    
-    dispatch({ type: 'RESULTS_REQUESTING' });
-    
-    Api.fetchResults(pageId, searchTxt)
-      .then(function(res) {
-        
-        dispatch({ type: 'RESULTS_RECEIVED', payload: res.body });
-      });
-  };  
+	return function(dispatch) {
+
+		dispatch({ type: 'DETAILS_REQUESTING' });
+
+		Api.fetchDetails(config)
+			.then(function(res) {
+
+				dispatch({ type: 'DETAILS_RECEIVED', payload: res.body });
+			});
+	};
 }

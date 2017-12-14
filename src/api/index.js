@@ -1,7 +1,11 @@
 import request from 'superagent';
 
-const fetchResults = function(pageId = 1, searchTxt = '') {
-	return request.get(`https://www.omdbapi.com/?apikey=6cf73d72&type=movie&s=${searchTxt}&page=${pageId}`);		
+const fetchFilters = function({ pageId = '', searchTxt = '', type = '', year = '' }) {
+	return request.get(`https://www.omdbapi.com/?apikey=6cf73d72&type=${type}&s=${searchTxt}&page=${pageId}&y=${year}`);		
 };
 
-export default { fetchResults };
+const fetchDetails = function(id = '') {
+	return request.get(`https://www.omdbapi.com/?apikey=6cf73d72&i=${id}`);		
+};
+
+export default { fetchFilters, fetchDetails };

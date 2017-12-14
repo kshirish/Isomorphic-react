@@ -18,53 +18,84 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(Express.static(path.join(__dirname, 'static')));
 
-app.get('*', function(req, res) {
+app.use(function(req, res, next) {
 
-	let pageId = 1;
-	let searchTxt = '';
+	if(req.path === '/') {
 
-	try {
+		const config = {
+			pageId: '', 
+			searchTxt: '',
+			type: '',
+			year: ''	
+		};
+
+		Api.fetchFilters(config).then(function(result) {
+
+			req.state = { main: { ...result.body, ...config }};
+			next();
+		});
 	
-		pageId = req.path.replace('/page/', '');
-		searchTxt = req.query.q.replace('q=', '');
-	
-	} catch(e) {
+	} else if(req.path.indexOf('/filter/') !== -1) {
 
-		console.log('error occured on server side');
+		const config = {
+			pageId: req.path.replace('/filter/', ''), 
+			searchTxt: req.query.q,
+			type: req.query.t,
+			year: req.query.y
+		};
+
+		Api.fetchFilters(config).then(function(result) {
+
+			req.state = { main: { ...result.body, ...config }};
+			next();
+		})
+
+	} else if(req.path.indexOf('/detail/') !== -1) {
+
+		const id = req.path.replace('/detail/', '');
+
+		Api.fetchDetails(id).then(function(result) {
+
+			req.state = { detail: { ...result.body }};
+			next();
+		})
+
+	} else if(req.path === '/about' ) {
+
+		next();
+
+	} else {
+
+		return res.redirect('/');
 	}
-		
-	Api.fetchResults(pageId, searchTxt)  
-		.then(function(result) {
 
-			const preloadedState = result.body;
-			const store = configureStore({ main: { ...preloadedState, ...{ pageId, searchTxt }}});
-			const context = {};
-
-			const html = renderToString(<Provider store={store}>      
-				<Router location={req.url} context={context}>
-					<App />
-				</Router>
-			</Provider>);
-
-			let status = 200;
-
-			// context.url will contain the URL to redirect to if a <Redirect> was used
-			if(context.url)
-				return res.redirect(302, context.url);
-
-			// set in NotFoundPage component
-			if (context.is404)
-				status = 404;
-			
-			const finalState = store.getState();
-
-			return res.status(status).render('index', { html, finalState });
-		})
-		.catch(function(err) {
-			console.error(err);
-		})
 });
 
+app.get('*', (req, res) => {
+
+	const store = configureStore(req.state || {});
+	const context = {};
+
+	const html = renderToString(<Provider store={store}>      
+		<Router location={req.url} context={context}>
+			<App />
+		</Router>
+	</Provider>);
+
+	let status = 200;
+
+	// context.url will contain the URL to redirect to if a <Redirect> was used
+	if(context.url)
+		return res.redirect(302, context.url);
+
+	// set in NotFoundPage component
+	if (context.is404)
+		status = 404;
+	
+	const finalState = store.getState();
+
+	return res.status(status).render('index', { html, finalState });
+});
 
 app.listen(port, (err) => { 
 	console.info(`Server running on ${port} [${env}]`);
